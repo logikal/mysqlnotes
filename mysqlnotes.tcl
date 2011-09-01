@@ -120,20 +120,22 @@ proc get_notes { nick uhost hand chan text } {
 
   set result [mysqlquery $db_handle $sql]
 
-  if {[set row [mysqlnext $result]] != ""} {
-    set id [lindex $row 0]
-    set msg [lindex $row 4]
-    set from_nick [lindex $row 3]
-    set when [clock format [lindex $row 1] -format "%Y/%m/%d %H:%M"]
-    set timestamp [lindex $row 1]
-    set time_format [clock format $timestamp -format {%m-%d-%Y %H:%M:%S}]
-    set timenow [clock seconds]
-    set timesince [expr {$timenow - $timestamp}]
-    set timedays [expr {$timesince / 86400}]
-    set timehours [expr {($timesince - ($timedays * 86400))/3600}]
-    set timeminutes [expr { ($timesince - ($timedays * 86400) - ($timehours * 3600))/60}]
-    
-    puthelp "PRIVMSG $chan :$nick: $msg -- $from_nick $timedays\d:$timehours\h:$timeminutes\m"
+  if {[set row [mysqlnext $result]] != "0"} {
+    foreach row $result {
+      set id [lindex $row 0]
+      set msg [lindex $row 4]
+      set from_nick [lindex $row 3]
+      set when [clock format [lindex $row 1] -format "%Y/%m/%d %H:%M"]
+      set timestamp [lindex $row 1]
+      set time_format [clock format $timestamp -format {%m-%d-%Y %H:%M:%S}]
+      set timenow [clock seconds]
+      set timesince [expr {$timenow - $timestamp}]
+      set timedays [expr {$timesince / 86400}]
+      set timehours [expr {($timesince - ($timedays * 86400))/3600}]
+      set timeminutes [expr { ($timesince - ($timedays * 86400) - ($timehours * 3600))/60}]
+      
+      puthelp "PRIVMSG $chan :$nick: $msg -- $from_nick $timedays\d:$timehours\h:$timeminutes\m"
+    }
     erase_notes $id
 	}    
 #    get_reminds $nick $uhost $hand $chan $text
