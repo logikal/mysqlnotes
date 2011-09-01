@@ -47,7 +47,7 @@ proc erase_notes { id } {
   putlog "entered erase_notes"
   global db_handle
   set sql "UPDATE notes SET delivered='1' WHERE id='$id'"
-  putloglev d * "Notes: executing $sql"
+  putlog "Notes: executing $sql"
   set result [mysqlquery $db_handle $sql]
   if {[set row [mysqlnext $result]] != ""} {
     return 1
