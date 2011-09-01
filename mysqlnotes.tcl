@@ -8,7 +8,7 @@
 package require mysqltcl
 
 # Load the database config from ./scripts/notedbconfig.tcl
-source scripts/notedbconfig.tcl
+source scripts/mysqlnotes/notedbconfig.tcl
 
 # Connect to the database:
 # !Currently done in notedbconfig.tcl!
