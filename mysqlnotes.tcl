@@ -115,7 +115,7 @@ proc get_notes { nick uhost hand chan text } {
   set msg [lrange $text 1 end]
   set lowercasenick [string tolower $nick]
   
-  set sql "SELECT * FROM notes WHERE to_nick LIKE '$lowercasenick' ORDER BY id ASC"
+  set sql "SELECT * FROM notes WHERE to_nick LIKE '$lowercasenick' AND discovered = '0' ORDER BY id ASC"
   putlog "Notes: executing $sql"
 
   set result [mysqlquery $db_handle $sql]
