@@ -1,9 +1,3 @@
-#################################
-# Public notes by Sergio100 1.01#
-# Adapted to MySQL, and remind  #
-# functions added by logikal    #
-#################################
-
 #############################################################################
 # This was originally written by Sergio100, and referred to as publicnotes. #
 # Credit should be given to Sergio for that                                 #
@@ -17,7 +11,7 @@ package require mysqltcl
 source scripts/notedbconfig.tcl
 
 # Connect to the database:
-set db_handle [mysqlconnect -host localhost -user volt -password CcAZEaUwLA2UsFAc -db notes]
+# !Currently done in notedbconfig.tcl!
 # set db_handle [mysqlconnect -host localhost -user $db_user -password $db_password -db notes]
 
 # Sanity check the database 
@@ -31,10 +25,11 @@ putlog "$note_number notes in the database"
 # bind ctcp - "ACTION" act_notes
 # bind pubm - * get_notes
 # bind pub - . get_reminds
-bind pub - !msnote leave_notes
-bind pub - !msn leave_notes
-bind pub - !msgetnotes get_notes
-bind pub - !msremind leave_remind
+
+bind pub - !note leave_notes
+bind pub - !n leave_notes
+bind pub - !getnotes get_notes
+bind pub - !remind leave_remind
 
 
 
@@ -52,9 +47,15 @@ proc erase_notes { id } {
   putlog "entered erase_notes"
   global db_handle
   set sql "UPDATE notes SET delivered='1' WHERE id='$id'"
-  putloglev d * "QuoteEngine: executing $sql"
+  putloglev d * "Notes: executing $sql"
   set result [mysqlquery $db_handle $sql]
-
+  if {[set row [mysqlnext $result]] != ""} {
+    return 1
+    } else {
+      putserv "Notice $nick : There was a problem erasing your note!"
+      putlog "Notes: There was a problem with $sql"
+      return 0
+    }
 
 }
 
@@ -89,7 +90,14 @@ proc leave_notes { nick uhost hand chan text } {
   append sql "'0')"
 
   set result [mysqlquery $db_handle $sql]
-
+  if {[set row [mysqlnext $result]] != ""} {
+    putserv "NOTICE $nick : Got it! Note to $to_nick sent.";
+    return 1
+    } else {
+      putserv "Notice $nick : There was a problem with sending your note!"
+      putlog "Notes: There was a problem with $sql"
+      return 0
+    }
 }
 
 proc act_notes { nick uhost handle dest kw text } {
@@ -108,7 +116,7 @@ proc get_notes { nick uhost hand chan text } {
   set lowercasenick [string tolower $nick]
   
   set sql "SELECT * FROM notes WHERE to_nick LIKE '$lowercasenick' ORDER BY id ASC"
-  putlog "QuoteEngine: executing $sql"
+  putlog "Notes: executing $sql"
 
   set result [mysqlquery $db_handle $sql]
 
@@ -246,4 +254,4 @@ proc dosearchremind {getnick} {
 ##############################
 # Show load statement        #
 ##############################
-putlog "Public Notes 1.0 by Sergio100 (EFNet)-v2 by logikal"
+putlog "MySqlnotes by logikal loaded"
