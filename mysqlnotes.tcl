@@ -111,7 +111,6 @@ proc get_notes { nick uhost hand chan text } {
   putlog "entered get_notes"
   global db_handle
   set getnick [lindex $text 0]
-#  set basenick [regsub -all 
   set msg [lrange $text 1 end]
   set lowercasenick [string tolower $nick]
   
@@ -135,11 +134,11 @@ proc get_notes { nick uhost hand chan text } {
       set timeminutes [expr { ($timesince - ($timedays * 86400) - ($timehours * 3600))/60}]
       
       puthelp "PRIVMSG $chan :$nick: $msg -- $from_nick $timedays\d:$timehours\h:$timeminutes\m"
-    }
-    erase_notes $id
-	}    
-#    get_reminds $nick $uhost $hand $chan $text
+      erase_notes $id
       }
+    }    
+#    get_reminds $nick $uhost $hand $chan $text
+  }
  
 
 proc leave_remind { nick uhost hand chan text } {
